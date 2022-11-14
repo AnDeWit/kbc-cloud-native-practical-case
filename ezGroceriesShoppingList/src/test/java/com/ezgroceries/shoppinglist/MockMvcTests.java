@@ -1,25 +1,21 @@
 package com.ezgroceries.shoppinglist;
 
-import com.ezgroceries.shoppinglist.Classes.ShoppingList;
-import com.ezgroceries.shoppinglist.Controllers.ShoppingListController;
-import com.ezgroceries.shoppinglist.Managers.CocktailManager;
-import com.ezgroceries.shoppinglist.Managers.ShoppingListManager;
+import com.ezgroceries.shoppinglist.classes.CocktailDBResponse;
+import com.ezgroceries.shoppinglist.classes.ShoppingList;
+import com.ezgroceries.shoppinglist.controllers.CocktailDBClient;
+import com.ezgroceries.shoppinglist.managers.ShoppingListManager;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -37,8 +33,11 @@ public class MockMvcTests {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
+
     private MockMvc mockMvc;
+
+    @Autowired
+    private CocktailDBClient cocktailDBClient;
 
 @MockBean
 private ShoppingListManager shoppingListManager;
@@ -48,7 +47,7 @@ private ShoppingListManager shoppingListManager;
         int expectedNumberOfAccounts = 2;
 
        this.mockMvc //
-                .perform(get("/cocktails") //
+                .perform(get("/cocktails?search=Russian") //
                         .accept(MediaType.parseMediaType("application/json"))) //
                 .andExpect(status().isOk()) //
                 .andExpect(content().contentType("application/json"))
@@ -81,5 +80,12 @@ private ShoppingListManager shoppingListManager;
         mockMvc.perform(post("/shopping-lists/{shoppingListId}/cocktails", 1).content("Test"))
                 .andExpect(status().isCreated());
     }
+
+    @Test
+    public void searchCocktails(){
+        CocktailDBResponse test = cocktailDBClient.searchCocktails("Russian");
+        System.out.println(test);
+    }
+
 
 }
